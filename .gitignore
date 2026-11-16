@@ -1,0 +1,54 @@
+# 依赖
+node_modules/
+.pnpm-store/
+.yarn/
+
+# 本地环境与凭据
+.env
+.env.*
+!.env.example
+*.local
+.secrets*
+
+# 测试 / 浏览器调试产物
+.playwright-mcp/
+playwright-report/
+test-results/
+coverage/
+*.log
+npm-debug.log*
+pnpm-debug.log*
+yarn-error.log*
+
+# 构建与打包产物
+dist/
+build/
+.cache/
+*.tgz
+
+# 系统与编辑器
+.DS_Store
+Thumbs.db
+desktop.ini
+.vscode/
+.idea/
+.history/
+*.swp
+*.swo
+*.bak
+*.tmp
+*.orig
+*.rej
+
+# 只保留在本地的设计研究、原始反馈与实施计划
+# 需要公开时，删掉下面几行即可
+docs/design-apple.md
+docs/design-claude.md
+docs/some.md
+docs/plan-*.md
+
+# 本地自检脚本、夹具与截图提取工具，不随仓库发布
+scripts/
+
+# 仓库根目录的临时截图
+/docs-images-*.png

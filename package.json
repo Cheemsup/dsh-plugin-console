@@ -1,0 +1,90 @@
+{
+  "name": "dsh-plugin-console",
+  "version": "0.1.1",
+  "private": true,
+  "description": "插件运行控制台：观测当前 profile 的插件组合、会话来源、工具归属与首请求，并支持会话级提示词/工具定制",
+  "type": "module",
+  "main": "lib/index.js",
+  "exports": {
+    ".": {
+      "default": "./lib/index.js"
+    },
+    "./client": {
+      "default": "./lib/client.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "lib/index.js",
+    "lib/client.js",
+    "lib/client.styles.js",
+    "lib/client.shared.js",
+    "lib/client.workspace-picker.js",
+    "lib/client.search.js",
+    "lib/client.plugins.js",
+    "lib/client.plugin-filters.js",
+    "lib/client.activity.js",
+    "lib/client.changes.js",
+    "lib/client.control.js",
+    "lib/client.sessions.js",
+    "lib/client.tools.js",
+    "lib/client.preview.js",
+    "lib/client.preview-raw.js",
+    "lib/client.preview-store.js",
+    "lib/client.preview-messages.js",
+    "lib/client.preview-tools.js",
+    "lib/client.effects.js",
+    "lib/client.editor.js",
+    "lib/client.draft.js",
+    "lib/client.dialog.js",
+    "lib/client.template-card.js",
+    "lib/client.cleanup.js",
+    "lib/client.influence.js",
+    "lib/client.schema.js",
+    "lib/client.apply.js",
+    "lib/client.store.js",
+    "lib/client.editor-store.js",
+    "lib/client.editor-messages.js",
+    "lib/client.page.js",
+    "lib/client.session-detail.js",
+    "lib/host/**/*.js",
+    "cordis.patch.yml",
+    "README.md"
+  ],
+  "scripts": {
+    "verify:host": "node --input-type=module -e \"import('./lib/index.js').then(() => console.log('host entry ok'))\"",
+    "verify:health": "node scripts/verify-health.mjs",
+    "verify:activity": "node scripts/verify-activity.mjs",
+    "verify:changes": "node scripts/verify-changes.mjs",
+    "verify:impact": "node scripts/verify-impact.mjs",
+    "verify:session-plan": "node scripts/verify-session-plan.mjs",
+    "verify:control": "node scripts/verify-control.mjs",
+    "verify:snapshot": "node scripts/verify-host-snapshot.mjs",
+    "verify:templates": "node scripts/verify-templates.mjs",
+    "verify:materialize": "node scripts/verify-materialize.mjs",
+    "verify:cleanup": "node scripts/verify-cleanup.mjs",
+    "verify:session-influence": "node scripts/verify-session-influence.mjs",
+    "verify:request-preview": "node scripts/verify-request-preview.mjs",
+    "verify:source-scan": "node scripts/verify-source-scan.mjs",
+    "verify:imports": "node scripts/verify-imports.mjs",
+    "verify:theme": "node scripts/verify-theme.mjs",
+    "verify:chunks": "node scripts/verify-chunks.mjs",
+    "verify:bundle": "node scripts/verify-bundle.mjs",
+    "verify:views": "node scripts/verify-views.mjs",
+    "verify:destructuring": "node scripts/verify-destructuring.mjs",
+    "verify:structure": "node scripts/verify-structure.mjs",
+    "verify": "npm run verify:host && npm run verify:health && npm run verify:activity && npm run verify:changes && npm run verify:impact && npm run verify:session-plan && npm run verify:control && npm run verify:snapshot && npm run verify:templates && npm run verify:materialize && npm run verify:cleanup && npm run verify:session-influence && npm run verify:request-preview && npm run verify:source-scan && npm run verify:imports && npm run verify:theme && npm run verify:chunks && npm run verify:bundle && npm run verify:views && npm run verify:destructuring && npm run verify:structure"
+  },
+  "license": "MIT",
+  "dsh": {
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    },
+    "client": {
+      "platform": "web"
+    }
+  },
+  "peerDependencies": {
+    "@deepseek-ai/cordis": "~4.1.0"
+  }
+}
