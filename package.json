@@ -4,6 +4,7 @@
   "description": "插件运行控制台：观测当前 profile 的插件组合、会话来源、工具归属与首请求，并支持会话级提示词/工具定制",
   "type": "module",
   "main": "lib/index.js",
+  "icon": "icon.svg",
   "exports": {
     ".": {
       "default": "./lib/index.js"
@@ -46,8 +47,11 @@
     "lib/client.editor-messages.js",
     "lib/client.page.js",
     "lib/client.session-detail.js",
+    "lib/client.impact-tree.js",
+    "lib/client.disable-preview.js",
     "lib/host/**/*.js",
     "cordis.patch.yml",
+    "icon.svg",
     "README.md"
   ],
   "scripts": {
@@ -56,6 +60,8 @@
     "verify:activity": "node scripts/verify-activity.mjs",
     "verify:changes": "node scripts/verify-changes.mjs",
     "verify:impact": "node scripts/verify-impact.mjs",
+    "verify:patch-config": "node scripts/verify-patch-config.mjs",
+    "verify:disable-preview": "node scripts/verify-disable-preview.mjs",
     "verify:session-plan": "node scripts/verify-session-plan.mjs",
     "verify:control": "node scripts/verify-control.mjs",
     "verify:snapshot": "node scripts/verify-host-snapshot.mjs",
@@ -69,10 +75,11 @@
     "verify:theme": "node scripts/verify-theme.mjs",
     "verify:chunks": "node scripts/verify-chunks.mjs",
     "verify:bundle": "node scripts/verify-bundle.mjs",
+    "verify:icon": "node scripts/verify-icon.mjs",
     "verify:views": "node scripts/verify-views.mjs",
     "verify:destructuring": "node scripts/verify-destructuring.mjs",
     "verify:structure": "node scripts/verify-structure.mjs",
-    "verify": "npm run verify:host && npm run verify:health && npm run verify:activity && npm run verify:changes && npm run verify:impact && npm run verify:session-plan && npm run verify:control && npm run verify:snapshot && npm run verify:templates && npm run verify:materialize && npm run verify:cleanup && npm run verify:session-influence && npm run verify:request-preview && npm run verify:source-scan && npm run verify:imports && npm run verify:theme && npm run verify:chunks && npm run verify:bundle && npm run verify:views && npm run verify:destructuring && npm run verify:structure"
+    "verify": "npm run verify:host && npm run verify:health && npm run verify:activity && npm run verify:changes && npm run verify:impact && npm run verify:patch-config && npm run verify:disable-preview && npm run verify:session-plan && npm run verify:control && npm run verify:snapshot && npm run verify:templates && npm run verify:materialize && npm run verify:cleanup && npm run verify:session-influence && npm run verify:request-preview && npm run verify:source-scan && npm run verify:imports && npm run verify:theme && npm run verify:chunks && npm run verify:bundle && npm run verify:icon && npm run verify:views && npm run verify:destructuring && npm run verify:structure"
   },
   "license": "MIT",
   "publishConfig": {

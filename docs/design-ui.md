@@ -38,9 +38,13 @@
 | `--pt-warn` | `#a86b12` | `#e8a33d` | `state-warn-primary` |
 | `--pt-error` | `#d93b40` | `#f56b6b` | `state-error-primary` |
 | `--pt-success` | `#0f9184` | `#30d158` | `state-success-primary` |
+| `--pt-graph-node-fill` / `--pt-graph-node-line` | `#f5f5f7` / `#b9b9bf` | `#2f2f31` / `#5f5f64` | `bg-layer-2` / `border-l4` |
+| `--pt-graph-edge` / `--pt-graph-label-bg` | `#7c7c82` / `#ffffff` | `#a1a1a6` / `#1d1d1f` | `label-tertiary` / `bg-layer-1` |
 
 语义色只用于「警告 / 错误 / 成功」；数量、长度、序号不是状态，用文字色（`--pt-text-3`）。
-搜索高亮的 6 个槽位也按主题各定义一份 `--pt-hit-N-bg/solid`。
+搜索高亮的 6 个槽位也按主题各定义一份 `--pt-hit-N-bg/solid`。关系图另有一组图专用 token：
+连线只有 1px 左右，借用 `--pt-line-*` 会在明亮主题下和画布糊在一起，所以节点填色、
+节点描边、连线与边标签光晕各留一个入口。
 
 ### 1.3 外观选择
 
@@ -113,7 +117,8 @@ L3 条目     .ptRow（列表行） · details.ptFold > summary（内容行） �
 | 详情页（插件 / 会话） | 身份 → 状态 → 来源与组合 → 依赖 → 贡献（注册项）→ 行为 → 观测（活动）→ 动作（控制） |
 | 定制页 | 条件（模板 / 基准 / 工作区与权限）→ 内容编辑（逐段 → 追加 → 消息 → 工具）→ 派生预览 → 提交 → 危险清理 |
 | 列表页 | 工具条筛选 → 诊断条（变更 / 通知）→ 分组列表 → 次级区块（模式预设） |
-| 预演页 | 条件 → 规模 → 内容标签 → 缺失说明 → 页底下一步 |
+| 上下文预演页 | 条件 → 规模 → 内容标签 → 缺失说明 → 页底下一步 |
+| 插件禁用预演页 | 被禁用的插件 → 连锁反应（会失去的工具与提示词 / 受影响的下游插件）→ 依赖关系图 → 配置与覆盖（覆盖链 / 配置对照 / 诊断）→ 证据与边界 |
 
 ---
 
@@ -129,6 +134,8 @@ L3 条目     .ptRow（列表行） · details.ptFold > summary（内容行） �
 | `client.session-detail.js` | 详情收起、绑定区的读/写分隔、子块标题 |
 | `client.tools.js` | 两段区块折叠头、来源分组头、工具行读数 |
 | `client.preview.js` | 条件/规模两行、内容区块头、折叠行右簇 |
+| `client.disable-preview.js` | 插件禁用预演：被禁用的插件、连锁反应（失去项 + 下游插件）、依赖关系图、配置与覆盖、证据与边界 |
+| `client.impact-tree.js` | 上下游关系树：完整影响链路（host 闭包）+ 上游提供者；去重、环检测、固定几何布局；纯函数，不碰 React；视图用图专用 token 画节点与连线 |
 | `client.preview-messages.js` / `client.influence.js` / `client.preview-raw.js` | 右簇、区块头、窗口规则 |
 | `client.editor.js` / `client.editor-messages.js` / `client.template-card.js` | 区块头、按钮层级、卡片语法 |
 
@@ -144,7 +151,7 @@ L3 条目     .ptRow（列表行） · details.ptFold > summary（内容行） �
 ## 7. 维护检查
 
 ```powershell
-npm run verify          # 21 项；含 verify:theme
+npm run verify          # 23 项；含 verify:theme
 node scripts/verify-theme.mjs
 ```
 

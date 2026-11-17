@@ -5,12 +5,13 @@
 ## 项目概览
 
 `@cheemsup/dsh-plugin-console` 是 DeepSeek Harness（DSH）的侧边栏「插件控制台」，定位是插件运行控制台：
-展示当前 profile 组合出的 Cordis 插件树、会话的插件来源、工具归属与首请求预演（在指定工作区、
+展示当前 profile 组合出的 Cordis 插件树、会话的插件来源、工具归属与上下文预演（在指定工作区、
 模式、权限预设下，新会话的第一条消息发出前模型真正会收到的内容），并支持把改写后的提示词/工具集
-作为模板应用到一个会话。树只是插件页的组织方式；控制台还包含会话 / 工具 / 预演三页与可撤销的
+作为模板应用到一个会话。树只是插件页的组织方式；控制台还包含会话 / 工具 / 上下文预演 /
+插件禁用预演四页与可撤销的
 会话级调节。代码分两半，加载方式完全不同：
 
-- **host 半**（`lib/index.js`，Node ESM）：被 DSH 直接 `import`，在 Cordis 里注册 12 条
+- **host 半**（`lib/index.js`，Node ESM）：被 DSH 直接 `import`，在 Cordis 里注册 13 条
   鉴权 Fetch 路由（`/api/plugin-console/*`）。
 - **client 半**（`lib/client.js`，浏览器 lazy-CJS）：由宿主模块系统
   `@deepseek-ai/dsh-client-modules` 加载，注册侧边栏 slot 与主面板。
@@ -23,7 +24,7 @@
 ## 常用命令
 
 ```powershell
-npm run verify                 # 全部 21 项自检（当前状态下应全绿）
+npm run verify                 # 全部 23 项自检（当前状态下应全绿）
 npm run verify:views           # 单跑一项；等价于 node scripts/verify-views.mjs
 node scripts/verify-views.mjs  # 任一脚本都可直接跑
 ```
@@ -31,7 +32,7 @@ node scripts/verify-views.mjs  # 任一脚本都可直接跑
 没有构建、lint、依赖安装步骤：仓库零依赖，自检脚本是普通 Node ESM，不依赖测试框架。
 唯一的 peer dependency 是宿主提供的 `@deepseek-ai/cordis`（`~4.1.0`）。
 
-> `scripts/`（21 项自检与夹具）只在本地保留，已由 `.gitignore` 排除，不随仓库发布。
+> `scripts/`（23 项自检与夹具）只在本地保留，已由 `.gitignore` 排除，不随仓库发布。
 
 安装/卸载到某个 profile（真机调试）：
 
@@ -58,9 +59,17 @@ lib/index.js → routes/* → templates/* + host/*
 - `host/snapshot.js` 是采集编排：把 entries、bundle 层、patch 扫描、模式、会话、工具、提示词、
   归属拼成一份 JSON。快照是**按需投影**（进入面板取一次，之后手动或 30 秒静默刷新），
   不订阅 Loader 变化。
-- 数据可信度分三级，界面与文档都要求区分：运行时事实（Loader / 注册表 / session log）、
-  声明值（preset 组合清单）、源码扫描（`host/source-scan.js`）。注册表不记 owner，所以工具
+- 数据可信度分四级，界面与文档都要求区分：运行时事实（Loader / 注册表 / session log）、
+  声明值（preset 组合清单）、文件事实（`host/patch-config.js` 读到的 patch config）、源码扫描
+  （`host/source-scan.js`）；推导与推断必须单独标注。注册表不记 owner，所以工具
   与提示词段的「谁注册的」只能扫包源码；扫不到就标「未归属」并写原因，不硬凑近似结果。
+- 插件禁用预演（`host/disable-preview.js` + `host/config-layers.js` + `host/patch-config.js`）：
+  影响面是派生计算——分组按 `entryId` 前缀级联；依赖链按「所需服务的提供者全部不可用」迭代到
+  不动点，条目距离取最后失效的必需服务 + 1，路径沿 `viaEntryId` 回溯，环靠距离递减收敛；owner
+  为空进「未归属」，消费者自己也在不可用集合里时不报 pending。链结论的语义是「禁用并重载/重启后」。
+  配置分层把 bundle / profile / home / 启动覆盖的 patch 声明与 Loader 生效值并排展示，bundle
+  patch 读不到就标「不可读」并给原因；patch 合并语义未公开，诊断只陈述「生效值里有没有 / 与某层
+  是否不同」，原因一律标推断。页面只读，执行禁用仍走控制区。
 - 依赖方向由 `scripts/verify-structure.mjs` 强制：`routes/*` 只解析参数、调服务、序列化，
   不写业务；`templates/*` 不碰 HTTP；`host/*` 不反向 import 上层。
 - 模板持久化：`templates/revisions/manifests/activations/masks/operations` 六张表。
@@ -90,7 +99,7 @@ client 半**没有打包器**，只能用一个包内 chunk 机制：每个文�
   装进 `vc` 传给视图，视图可脱离页面单独渲染——`verify-views.mjs` 依赖这点。
 - 共享实例（`draft`、`cleanup`、`editor` 等）在 `client.js` 里组装一次再注入，避免不同
   chunk 各自造一份状态。
-- 视图只有四个标签 + 定制编辑器：插件 / 会话 / 工具 / 预演。页面组织原则是「一页一个问题」，
+- 视图只有五个标签 + 定制编辑器：插件 / 会话 / 工具 / 上下文预演 / 插件禁用预演。页面组织原则是「一页一个问题」，
   界面约束见 `docs/design-ui.md`，改 UI 前先读。
 
 ## 修改时必须遵守的硬约束
