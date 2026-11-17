@@ -1,7 +1,6 @@
 {
-  "name": "dsh-plugin-console",
+  "name": "@cheemsup/dsh-plugin-console",
   "version": "0.1.1",
-  "private": true,
   "description": "插件运行控制台：观测当前 profile 的插件组合、会话来源、工具归属与首请求，并支持会话级提示词/工具定制",
   "type": "module",
   "main": "lib/index.js",
@@ -76,6 +75,30 @@
     "verify": "npm run verify:host && npm run verify:health && npm run verify:activity && npm run verify:changes && npm run verify:impact && npm run verify:session-plan && npm run verify:control && npm run verify:snapshot && npm run verify:templates && npm run verify:materialize && npm run verify:cleanup && npm run verify:session-influence && npm run verify:request-preview && npm run verify:source-scan && npm run verify:imports && npm run verify:theme && npm run verify:chunks && npm run verify:bundle && npm run verify:views && npm run verify:destructuring && npm run verify:structure"
   },
   "license": "MIT",
+  "publishConfig": {
+    "access": "public"
+  },
+  "author": "Cheemsup",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Cheemsup/dsh-plugin-console.git"
+  },
+  "homepage": "https://github.com/Cheemsup/dsh-plugin-console",
+  "bugs": {
+    "url": "https://github.com/Cheemsup/dsh-plugin-console/issues"
+  },
+  "keywords": [
+    "deepseek-harness",
+    "dsh",
+    "dsh-plugin",
+    "cordis",
+    "plugin-console",
+    "inspector",
+    "prompt-preview"
+  ],
+  "engines": {
+    "dsh": ">=0.2.2-rc.1 <0.3.0"
+  },
   "dsh": {
     "bundle": {
       "patch": "./cordis.patch.yml"

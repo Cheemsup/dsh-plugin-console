@@ -26,7 +26,14 @@ It also provides a first-request model-context preview and matching context cust
 ## Install
 
 ```sh
-TBD
+# From npm
+dsh plugin --profile <profile> add @cheemsup/dsh-plugin-console
+
+# From GitHub
+dsh plugin --profile <profile> add github:Cheemsup/dsh-plugin-console
+
+# From a local checkout (development)
+dsh plugin --profile <profile> add file:<absolute path to this repo>
 ```
 
 ## Screens

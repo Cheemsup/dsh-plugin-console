@@ -4,7 +4,7 @@
 
 ## 项目概览
 
-`dsh-plugin-console` 是 DeepSeek Harness（DSH）的侧边栏「插件控制台」，定位是插件运行控制台：
+`@cheemsup/dsh-plugin-console` 是 DeepSeek Harness（DSH）的侧边栏「插件控制台」，定位是插件运行控制台：
 展示当前 profile 组合出的 Cordis 插件树、会话的插件来源、工具归属与首请求预演（在指定工作区、
 模式、权限预设下，新会话的第一条消息发出前模型真正会收到的内容），并支持把改写后的提示词/工具集
 作为模板应用到一个会话。树只是插件页的组织方式；控制台还包含会话 / 工具 / 预演三页与可撤销的
@@ -37,10 +37,10 @@ node scripts/verify-views.mjs  # 任一脚本都可直接跑
 
 ```powershell
 dsh plugin --profile <profile> add file:<本目录绝对路径>
-dsh plugin --profile <profile> remove dsh-plugin-console
+dsh plugin --profile <profile> remove @cheemsup/dsh-plugin-console
 ```
 
-`cordis.patch.yml` 声明了 bundle 插入行（`id: plugin-console`、`name: dsh-plugin-console`），
+`cordis.patch.yml` 声明了 bundle 插入行（`id: plugin-console`、`name: '@cheemsup/dsh-plugin-console'`），
 行 id 必须固定，浏览器半才会挂到这一行上。
 
 ## 架构
@@ -78,7 +78,7 @@ lib/index.js → routes/* → templates/* + host/*
 ### client 半
 
 client 半**没有打包器**，只能用一个包内 chunk 机制：每个文件是
-`window.__ModuleLoader__.load({ id: 'dsh-plugin-console', chunk: 'client.<name>.js', factory })`，
+`window.__ModuleLoader__.load({ id: '@cheemsup/dsh-plugin-console', chunk: 'client.<name>.js', factory })`，
 入口用 `require.async('./client.<name>.js')` 取。`client.js` 先并发加载全部 chunk，最后加载
 `client.page.js`（它的工厂依赖前面所有实例）；`styles.ensureStyles()` 在挂面板前执行。
 

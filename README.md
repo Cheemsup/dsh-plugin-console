@@ -17,7 +17,14 @@ DeepSeek Harness（DSH）的侧边栏插件控制台：通过运行时对象分�
 ## 安装
 
 ```sh
-待定
+# 从 npm 安装
+dsh plugin --profile <profile> add @cheemsup/dsh-plugin-console
+
+# 从 GitHub 安装
+dsh plugin --profile <profile> add github:Cheemsup/dsh-plugin-console
+
+# 从本地目录安装（开发）
+dsh plugin --profile <profile> add file:<本目录绝对路径>
 ```
 
 ## 界面
@@ -26,7 +33,7 @@ DeepSeek Harness（DSH）的侧边栏插件控制台：通过运行时对象分�
 
 ![插件页](docs/images/01-plugins.png)
 
-*图 1 · 插件页说明了DSH内插件的信息、行为、依赖关系等信息*
+*图 1 · 插件页：说明了DSH内插件的信息、行为、依赖关系等信息*
 
 ### 会话页
 

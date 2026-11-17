@@ -2,4 +2,4 @@
 # 行 id 固定为 plugin-console，name 必须是裸包名，浏览器半（dsh.client）才会挂到这一行上。
 - insert:
     - id: plugin-console
-      name: dsh-plugin-console
+      name: '@cheemsup/dsh-plugin-console'
