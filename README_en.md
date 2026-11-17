@@ -40,35 +40,35 @@ dsh plugin --profile <profile> add file:<absolute path to this repo>
 
 ### Plugins
 
-![Plugins page](docs/images/01-plugins.png)
+![Plugins page](https://raw.githubusercontent.com/Cheemsup/dsh-plugin-console/main/docs/images/01-plugins.png)
 
 *Figure 1 · The Plugins page shows plugin information, behavior, dependencies, and relationships
 inside DSH.*
 
 ### Sessions
 
-![Sessions page](docs/images/02-sessions.png)
+![Sessions page](https://raw.githubusercontent.com/Cheemsup/dsh-plugin-console/main/docs/images/02-sessions.png)
 
 *Figure 2 · The Sessions page shows the plugins involved in a session and the complete
 first-request context.*
 
 ### Tools
 
-![Tools page](docs/images/03-tools.png)
+![Tools page](https://raw.githubusercontent.com/Cheemsup/dsh-plugin-console/main/docs/images/03-tools.png)
 
 *Figure 3 · The Tools page answers "which tools the model can see, and who provided them." Sources
 come from scanning plugin package source, presented in a readable form.*
 
 ### First-request preview
 
-![Preview](docs/images/04-preview.png)
+![Preview](https://raw.githubusercontent.com/Cheemsup/dsh-plugin-console/main/docs/images/04-preview.png)
 
 *Figure 4 · The preview page answers "if I started a new session now, what would the model receive
 before my first message." Different workspaces and modes produce different preview results.*
 
 ### Prompt customization templates
 
-![Editor](docs/images/05-editor.png)
+![Editor](https://raw.githubusercontent.com/Cheemsup/dsh-plugin-console/main/docs/images/05-editor.png)
 
 *Figure 5 · The editor: after choosing a workspace and mode, customize the prompt on top of the
 preview and start a session.*

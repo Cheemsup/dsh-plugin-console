@@ -31,31 +31,31 @@ dsh plugin --profile <profile> add file:<本目录绝对路径>
 
 ### 插件页
 
-![插件页](docs/images/01-plugins.png)
+![插件页](https://raw.githubusercontent.com/Cheemsup/dsh-plugin-console/main/docs/images/01-plugins.png)
 
 *图 1 · 插件页：说明了DSH内插件的信息、行为、依赖关系等信息*
 
 ### 会话页
 
-![会话页](docs/images/02-sessions.png)
+![会话页](https://raw.githubusercontent.com/Cheemsup/dsh-plugin-console/main/docs/images/02-sessions.png)
 
 *图 2 · 会话页：展示了一个会话涉及的插件以及完整的首次请求上下文信息*
 
 ### 工具页
 
-![工具页](docs/images/03-tools.png)
+![工具页](https://raw.githubusercontent.com/Cheemsup/dsh-plugin-console/main/docs/images/03-tools.png)
 
 *图 3 · 工具页：回答「模型能看到哪些工具、谁给的」。来源来自扫描插件包源码，提供友好阅读方式*
 
 ### 首请求预演
 
-![预演](docs/images/04-preview.png)
+![预演](https://raw.githubusercontent.com/Cheemsup/dsh-plugin-console/main/docs/images/04-preview.png)
 
 *图 4 · 预演页：回答「如果现在开一个新会话，第一条消息发出前模型会收到什么」，通过指定不同的工作区以及模式会带来不同的预演结果*
 
 ### 提示词定制模板
 
-![定制编辑器](docs/images/05-editor.png)
+![定制编辑器](https://raw.githubusercontent.com/Cheemsup/dsh-plugin-console/main/docs/images/05-editor.png)
 
 *图 5 · 定制编辑器：选定工作区以及模式，则能够在此预演基础上进行提示词的定制以及开启会话*
 
