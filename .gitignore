@@ -52,5 +52,6 @@ scripts/
 
 # 仓库根目录的临时截图
 /docs-images-*.png
+/*.png
 
 /reference/*

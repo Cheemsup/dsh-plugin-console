@@ -66,7 +66,9 @@ lib/index.js → routes/* → templates/* + host/*
 - 插件禁用预演（`host/disable-preview.js` + `host/config-layers.js` + `host/patch-config.js`）：
   影响面是派生计算——分组按 `entryId` 前缀级联；依赖链按「所需服务的提供者全部不可用」迭代到
   不动点，条目距离取最后失效的必需服务 + 1，路径沿 `viaEntryId` 回溯，环靠距离递减收敛；owner
-  为空进「未归属」，消费者自己也在不可用集合里时不报 pending。链结论的语义是「禁用并重载/重启后」。
+  为空进「未归属」（注册表里有这一项、源码扫描定位不到），名字扫得到但全局注册表没有则单独进
+  「不在全局注册表」（会话内/条件注册，不计入失去），消费者自己也在不可用集合里时不报 pending。
+  链结论的语义是「禁用并重载/重启后」。
   配置分层把 bundle / profile / home / 启动覆盖的 patch 声明与 Loader 生效值并排展示，bundle
   patch 读不到就标「不可读」并给原因；patch 合并语义未公开，诊断只陈述「生效值里有没有 / 与某层
   是否不同」，原因一律标推断。页面只读，执行禁用仍走控制区。
@@ -114,6 +116,11 @@ client 半**没有打包器**，只能用一个包内 chunk 机制：每个文�
   列表，host 是 `lib/host/**/*.js` 通配）。
 - 新增 host 路由：路径常量放 `host/constants.js`，路由文件保持只做 HTTP 适配，在
   `lib/index.js` 的 `mount(...)` 里挂载并给 effect label。
+- 内置插件页的显示名与简介来自包内 `locale/<language>.json` 的 `meta.title` /
+  `meta.description`（宿主 `readPluginMeta` 读取；缺省时标题退回包名，也就是原始 id）。
+  `locale/en.json` 是语言表基线，语言文件必须同时写进 `package.json` 的 `exports`
+  （`./locale/*.json`）与 `files`；`verify-bundle.mjs` 强制这三件事。图标同理走 manifest
+  的 `icon` 字段，路径留在包内并随包发布。
 - 颜色只走 `--pt-*`：组件规则里不许出现 `--dsw-alias-*`、hex 或 `rgb()`；宿主 token 只出现在
   `.ptRoot` 的「跟随 DSH」映射块，明亮/夜间两套色板在 `[data-pt-theme]` 块里（`verify:theme` 强制）。
   `pt` 是历史样式命名空间，产品改名时特意没有跟着改成 `pc`，不要顺手重命名。

@@ -12,6 +12,7 @@
     "./client": {
       "default": "./lib/client.js"
     },
+    "./locale/*.json": "./locale/*.json",
     "./package.json": "./package.json"
   },
   "files": [
@@ -48,9 +49,11 @@
     "lib/client.page.js",
     "lib/client.session-detail.js",
     "lib/client.impact-tree.js",
+    "lib/client.relation-graph.js",
     "lib/client.disable-preview.js",
     "lib/host/**/*.js",
     "cordis.patch.yml",
+    "locale/*.json",
     "icon.svg",
     "README.md"
   ],

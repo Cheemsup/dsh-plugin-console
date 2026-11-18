@@ -1,0 +1,6 @@
+{
+  "meta": {
+    "title": "Plugin Console",
+    "description": "Sidebar console for DeepSeek Harness: inspect plugin composition, session sources and tool ownership, preview model context and plugin-disable impact, and customize prompts and tools."
+  }
+}

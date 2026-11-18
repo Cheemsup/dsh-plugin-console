@@ -73,6 +73,8 @@ L3 条目     .ptRow（列表行） · details.ptFold > summary（内容行） �
 - 卡片不嵌卡片；折叠块最多嵌一层（消息 → 分段允许）。
 - 顶层区块下的子区块用 `.ptSubBlocks`（左侧竖线 + 降一级的 `.ptSubTitle`）。
 - 区块说明只允许两种形式：一句 `.ptHint` / `.ptSectionNote`，或 `title` 悬停；不并列两句。
+- 逐层 config 每层用 `.ptConfigLayer` 分块：层标题走 `.ptSubTitle`，内容用 `.ptConfigLayerBody`
+  缩进并带 1px 竖线；键值用 `.ptConfigList`，键比值低一档颜色，层与层之间只隔一条 hairline。
 - 悬停说明的文案与机制不变；可悬停的文字统一 `cursor:help`。
 
 ---
@@ -84,6 +86,7 @@ L3 条目     .ptRow（列表行） · details.ptFold > summary（内容行） �
 | `.ptBtn` | 常规动作 | 28px、8px 圆角、hairline |
 | `.ptBtn[data-tone=primary]` | 区块主动作 | 28px、全 pill、accent 实底 |
 | `.ptBtn[data-tone=danger]` | 破坏性动作 | 28px、描边 + error 色；**实底只出现在确认弹窗** |
+| `.ptBtn[data-tone=soft]` | 页面下一步（非提交） | pill、`--pt-accent-soft` 色调底 + accent 文字；悬停出 accent hairline |
 | `.ptBtnLarge` | 页面主动作 | 36px、pill；只有 `data-tone=primary` 才是实底 |
 | `.ptTextBtn` | 静默动作 | 12px、无边框 |
 | `.ptChip` / `.ptSegBtn` | 筛选型切换 | 24px / 24px 分段 |
@@ -92,6 +95,8 @@ L3 条目     .ptRow（列表行） · details.ptFold > summary（内容行） �
 
 - 同一屏幕只允许一个 accent 实底主按钮。定制页的「预览定制结果」是次级大按钮，
   「应用并发送」才是唯一主按钮。
+- 页面级的「下一步」如果不是提交（如上下文预演页底的「定制上下文」），用 `data-tone="soft"`
+  的色调底，不用 accent 实底：只读页面上实底会抢掉内容本身。
 - 破坏性动作排在最后，与主按钮之间留间距并隔一条 `.ptDivider`，不与主按钮同行。
 - 工具条批量动作顺序固定：**折叠全部 → 展开全部**。
 - 所有按钮 `:focus-visible` 用 `--pt-focus` 内描边，`:active` 统一 `scale(.97)`。
@@ -134,8 +139,9 @@ L3 条目     .ptRow（列表行） · details.ptFold > summary（内容行） �
 | `client.session-detail.js` | 详情收起、绑定区的读/写分隔、子块标题 |
 | `client.tools.js` | 两段区块折叠头、来源分组头、工具行读数 |
 | `client.preview.js` | 条件/规模两行、内容区块头、折叠行右簇 |
-| `client.disable-preview.js` | 插件禁用预演：被禁用的插件、连锁反应（失去项 + 下游插件）、依赖关系图、配置与覆盖、证据与边界 |
-| `client.impact-tree.js` | 上下游关系树：完整影响链路（host 闭包）+ 上游提供者；去重、环检测、固定几何布局；纯函数，不碰 React；视图用图专用 token 画节点与连线 |
+| `client.disable-preview.js` | 插件禁用预演：被禁用的插件、连锁反应（失去项 + 下游插件）、配置与覆盖、证据与边界 |
+| `client.impact-tree.js` | 上下游关系树：完整下游影响链路（host 闭包）+ 上游提供者（只展开 2 层）+ 以选中节点为中心的完整依赖链路（两侧递归到底）；去重、环检测、固定几何布局、名称折行；纯函数，不碰 React |
+| `client.relation-graph.js` | 依赖关系图画布：固定视口内 Ctrl + 滚轮缩放、拖拽平移，节点只显示插件名并把状态收进悬浮提示；连线箭头统一为「提供者 → 消费者」（上游提供者指向靠近目标的消费者） |
 | `client.preview-messages.js` / `client.influence.js` / `client.preview-raw.js` | 右簇、区块头、窗口规则 |
 | `client.editor.js` / `client.editor-messages.js` / `client.template-card.js` | 区块头、按钮层级、卡片语法 |
 

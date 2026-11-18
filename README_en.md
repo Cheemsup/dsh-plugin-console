@@ -20,16 +20,12 @@ and its config overrides, and matching context customization.
   to trace where every tool comes from and see its details.
 - **Context preview** — pick a mode, workspace, and permission preset to see the complete
   context the model will receive before the first message of a new session is sent.
-- **Plugin disable preview** — pick any plugin and preview what disabling it would remove: tools, prompt
-  sections, and runtime injections. It walks the dependency chain to a fixpoint — a consumer is
-  blocked only when every provider of a required service is gone — and lists every plugin that would
-  become unavailable, the service it loses, and the full causal path. It also shows each
-  composition layer's (bundle / profile / home / launch overlay) declared config next to the
-  effective value, and a tree of upstream/downstream plugin relationships. The page is read-only and
-  never disables anything.
 - **Prompt customization templates** — a rule file managed by the plugin enables customization on
   top of DSH's standard model context, with a complete lifecycle for switching, inheritance, and
   cleanup.
+- **Plugin disable preview** — pick any plugin and preview what disabling it would remove: tools,
+  prompt sections, and runtime injections. It also shows how the declared config differs from the
+  effective value, and a tree of upstream/downstream plugin relationships.
 
 ## Install
 
@@ -83,17 +79,9 @@ preview and start a session.*
 
 ### Plugin disable preview
 
-Answers "what would happen, and who would be affected, if I disabled this plugin." The body has two
-parts: the plugin being disabled, and the chain reaction. The chain reaction answers exactly two
-questions — which tools and prompts would become unavailable (including downstream contributions),
-and which downstream plugins would be affected. The impact is derived: "lost" only means no other
-owner. The dependency chain is computed to a fixpoint — a
-consumer is blocked only when every provider of a required service is gone — and every level lists
-its missing service and full causal path from the target. The dependency graph and config layers sit
-in separate blocks below. Config layers show the patch file's declaration next to the loader's
-effective value, and unreadable layers say why; injected-message ownership and group children are
-marked as inference. The page is read-only; disabling still happens in the plugin detail's control
-section.
+![Plugin disable preview](https://raw.githubusercontent.com/Cheemsup/dsh-plugin-console/main/docs/images/06-disable-preview.png)
+
+*Figure 6 · The dependency graph in the plugin disable preview*
 
 ## Data confidence
 
