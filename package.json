@@ -1,6 +1,6 @@
 {
   "name": "@cheemsup/dsh-plugin-console",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "插件运行控制台：观测当前 profile 的插件组合、会话来源、工具归属与首请求，并支持会话级提示词/工具定制",
   "type": "module",
   "main": "lib/index.js",
