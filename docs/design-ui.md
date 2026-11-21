@@ -70,7 +70,7 @@ L3 条目     .ptRow（列表行） · details.ptFold > summary（内容行） �
 规则：
 
 - 列表分组头与区块头视觉一致（同样的字号、内边距、hairline、`▶`）；区别只是有没有计数与动作。
-- 卡片不嵌卡片；折叠块最多嵌一层（消息 → 分段允许）。
+- 卡片不嵌卡片；折叠块最多嵌一层（消息 → 分段允许；插件贡献 → 注入文本 → 注册条件与源码也按这条处理）。
 - 顶层区块下的子区块用 `.ptSubBlocks`（左侧竖线 + 降一级的 `.ptSubTitle`）。
 - 区块说明只允许两种形式：一句 `.ptHint` / `.ptSectionNote`，或 `title` 悬停；不并列两句。
 - 逐层 config 每层用 `.ptConfigLayer` 分块：层标题走 `.ptSubTitle`，内容用 `.ptConfigLayerBody`
@@ -107,7 +107,8 @@ L3 条目     .ptRow（列表行） · details.ptFold > summary（内容行） �
 
 - 左簇 `.ptTag` 只表达状态/关系：来源层、失败、已禁用、禁用条件、缺服务、被覆盖、
   subagent / 分叉 / 父会话、提示词定制状态、本模式替换/追加、置信度、影响条件、归属插件、
-  lazy、有指导、未归属。4 档颜色：中性 / 强调（`data-tone="user"`）/ 警告 / 错误。
+  lazy、有指导、未归属、注册作用域（其它作用域）、模板名、同名、无注册点、唯一来源。4 档颜色：
+  中性 / 强调（`data-tone="user"`）/ 警告 / 错误。
 - 右簇 `.ptEnd`（`shared.rowEnd(...)`）只放读数：`order N`、`54B`、`工具 12`、`调用 48`、
   `#3`、`3/12`、相对时间。**数字不再用胶囊**。
 - 行内顺序固定：`[缩进][状态点][名称 + 副标题][左簇标签…][.ptEnd 读数…]`。
@@ -134,15 +135,15 @@ L3 条目     .ptRow（列表行） · details.ptFold > summary（内容行） �
 | `client.styles.js` | token 三层 + 全部组件规则；新增类先在这里定义 |
 | `client.shared.js` | `useThemePreference / normalizeTheme / THEMES / rowEnd / resultText` |
 | `client.page.js` | 外观三段控件、`data-pt-theme`、页面壳 |
-| `client.plugins.js` | 行标签/读数分区、详情顺序与 divider、详情收起 |
+| `client.plugins.js` | 行标签/读数分区、详情顺序与 divider、详情收起；贡献分工具 / 提示词段 / 运行时上下文三组，提示词贡献一律用 `details` 容器：一级注入文本，二级「何时展示 / 注册点与源码」短片段；有装配落点的容器在摘要里带「预演」动作 |
 | `client.sessions.js` | 行标签/读数分区、分组头右簇 |
 | `client.session-detail.js` | 详情收起、绑定区的读/写分隔、子块标题 |
 | `client.tools.js` | 两段区块折叠头、来源分组头、工具行读数 |
-| `client.preview.js` | 条件/规模两行、内容区块头、折叠行右簇 |
+| `client.preview.js` | 条件/规模两行、内容区块头、折叠行右簇、跳转来源说明与未命中原因 |
 | `client.disable-preview.js` | 插件禁用预演：被禁用的插件、连锁反应（失去项 + 下游插件）、配置与覆盖、证据与边界 |
 | `client.impact-tree.js` | 上下游关系树：完整下游影响链路（host 闭包）+ 上游提供者（只展开 2 层）+ 以选中节点为中心的完整依赖链路（两侧递归到底）；去重、环检测、固定几何布局、名称折行；纯函数，不碰 React |
 | `client.relation-graph.js` | 依赖关系图画布：固定视口内 Ctrl + 滚轮缩放、拖拽平移，节点只显示插件名并把状态收进悬浮提示；连线箭头统一为「提供者 → 消费者」（上游提供者指向靠近目标的消费者） |
-| `client.preview-messages.js` / `client.influence.js` / `client.preview-raw.js` | 右簇、区块头、窗口规则 |
+| `client.preview-messages.js` / `client.influence.js` / `client.preview-raw.js` | 右簇、区块头、窗口规则、上下文未命中提示 |
 | `client.editor.js` / `client.editor-messages.js` / `client.template-card.js` | 区块头、按钮层级、卡片语法 |
 
 窗口规则：整份请求正文（system / tools / messages）用 `.ptWindow`（320px，内部滚动）；
@@ -157,7 +158,7 @@ L3 条目     .ptRow（列表行） · details.ptFold > summary（内容行） �
 ## 7. 维护检查
 
 ```powershell
-npm run verify          # 23 项；含 verify:theme
+npm run verify          # 24 项；含 verify:theme
 node scripts/verify-theme.mjs
 ```
 

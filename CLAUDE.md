@@ -24,7 +24,7 @@
 ## 常用命令
 
 ```powershell
-npm run verify                 # 全部 23 项自检（当前状态下应全绿）
+npm run verify                 # 全部 24 项自检（当前状态下应全绿）
 npm run verify:views           # 单跑一项；等价于 node scripts/verify-views.mjs
 node scripts/verify-views.mjs  # 任一脚本都可直接跑
 ```
@@ -32,7 +32,7 @@ node scripts/verify-views.mjs  # 任一脚本都可直接跑
 没有构建、lint、依赖安装步骤：仓库零依赖，自检脚本是普通 Node ESM，不依赖测试框架。
 唯一的 peer dependency 是宿主提供的 `@deepseek-ai/cordis`（`~4.1.0`）。
 
-> `scripts/`（23 项自检与夹具）只在本地保留，已由 `.gitignore` 排除，不随仓库发布。
+> `scripts/`（24 项自检与夹具）只在本地保留，已由 `.gitignore` 排除，不随仓库发布。
 
 安装/卸载到某个 profile（真机调试）：
 
@@ -63,6 +63,12 @@ lib/index.js → routes/* → templates/* + host/*
   声明值（preset 组合清单）、文件事实（`host/patch-config.js` 读到的 patch config）、源码扫描
   （`host/source-scan.js`）；推导与推断必须单独标注。注册表不记 owner，所以工具
   与提示词段的「谁注册的」只能扫包源码；扫不到就标「未归属」并写原因，不硬凑近似结果。
+- 提示词注册点：源码扫描除了名字，还记录 `sites`（file / line / receiver / receiverKind）。
+  `receiverKind` 是启发式推断，只用来判断「这个名字是否在本作用域注册」；插件页据此决定
+  是否提供「在上下文预演中查看」——预演只装配 global + preset scope，子代理 / 会话 /
+  条件作用域（例如 `dsh-subagent` 的 `subagent:delegation`）没有首请求落点，只展开本地
+  注册点。按需源码片段走 `POST /api/plugin-console/registration-site`：只接受模块名，
+  宿主解析包目录，只读包内 `lib/**/*.js`，有大小 / 行数上限，失败返回 `found:false`。
 - 插件禁用预演（`host/disable-preview.js` + `host/config-layers.js` + `host/patch-config.js`）：
   影响面是派生计算——分组按 `entryId` 前缀级联；依赖链按「所需服务的提供者全部不可用」迭代到
   不动点，条目距离取最后失效的必需服务 + 1，路径沿 `viaEntryId` 回溯，环靠距离递减收敛；owner
@@ -103,6 +109,13 @@ client 半**没有打包器**，只能用一个包内 chunk 机制：每个文�
   chunk 各自造一份状态。
 - 视图只有五个标签 + 定制编辑器：插件 / 会话 / 工具 / 上下文预演 / 插件禁用预演。页面组织原则是「一页一个问题」，
   界面约束见 `docs/design-ui.md`，改 UI 前先读。
+- 插件详情的贡献分三组：工具 / 提示词段 / 运行时上下文。提示词贡献一律渲染成 `details`
+  容器（一级看注入文本，二级看「何时展示 / 注册点与源码」）；只有「本作用域注册且当前装配里
+  有落点」的容器在摘要里提供「预演」动作。名字级索引恰好只有本行、站点全在本作用域且名字
+  不是模板时标 `唯一来源`。预演页的来源标签统一为「可能的插件来源，点击跳转查看」，
+  不在标签上区分同名碰撞。`gotoSection(name, kind, origin)` 把种类与来源传给预演，预演据此
+  选标签页并在顶部说明跳转来源；`focusKind` / `focusOrigin` 与 `focusSection` 同生命周期，
+  切视图时一起清空。
 
 ## 修改时必须遵守的硬约束
 

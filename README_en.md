@@ -49,6 +49,11 @@ dsh plugin --profile <profile> add file:<absolute path to this repo>
 *Figure 1 · The Plugins page shows plugin information, behavior, dependencies, and relationships
 inside DSH.*
 
+Plugin details split contributions into tools, prompt sections, and runtime contexts. Only names
+with a target in the current first-request assembly jump to the context preview; subagent, session,
+and conditional registrations expand in place with their registration site, receiver, and an
+on-demand source snippet.
+
 ### Sessions
 
 ![Sessions page](https://raw.githubusercontent.com/Cheemsup/dsh-plugin-console/main/docs/images/02-sessions.png)
@@ -91,6 +96,8 @@ preview and start a session.*
   recomputed from the same config and files.
 - **Source attribution**: the registry does not record who registered a tool or prompt section, so
   plugin source is scanned to fill that in.
+- **Scope inference**: a registration site carries its file, line, and receiver; receivers such as
+  `childCtx` / `scope` are only used to infer "another scope", never presented as a runtime fact.
 - **File facts**: bundle / profile / home patch files and their config subtrees; unreadable files or
   unsupported syntax are reported with a reason.
 - **Unknown / unavailable**: stated honestly when input is missing or the host exposes no read path;
@@ -104,6 +111,16 @@ preview and start a session.*
 - The context preview is a prediction, not a record. Attachments/images, later turns, and
   dynamic injections such as goal / plan / schedule are out of scope; subagent first requests are not
   included.
+- The prompt sections and runtime contexts listed on the Plugins page come from package source
+  scanning; a name existing there does not mean it is registered in the current session. Every
+  prompt contribution expands in place: the first level shows the injected text, and a second level
+  shows when it is registered, its registration site, and a short source window. Only contributions
+  with a target in the current mode's first-request assembly get a "preview" action; subagent,
+  session, and conditional contributions show source evidence only. A contribution is tagged
+  "unique source" when the name-level index has exactly this row, all its sites are in this scope,
+  and the name is not a template. Owner tags on the context preview all read
+  "possible plugin source, click to open" and do not distinguish name collisions.
+  Both the text and the snippet are static source facts, not the text the model actually received.
 - Activity covers tool contributions only, over the last 7 days and at most 20 sessions
   (experimental). Plugins that only provide services or listen to events have no call counts.
 - The plugin disable preview is derived; it does not disable anything or simulate an unload, and "lost" only
