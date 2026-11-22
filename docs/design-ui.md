@@ -145,8 +145,10 @@ L3 条目     .ptRow（列表行） · details.ptFold > summary（内容行） �
 | `client.tools.js` | 两段区块折叠头、来源分组头、工具行读数 |
 | `client.preview.js` | 条件/规模两行、内容区块头、折叠行右簇、跳转来源说明与未命中原因 |
 | `client.disable-preview.js` | 插件禁用预演：被禁用的插件、连锁反应（失去项 + 下游插件）、配置与覆盖、证据与边界 |
-| `client.impact-tree.js` | 上下游关系树：完整下游影响链路（host 闭包）+ 上游提供者（只展开 2 层）+ 以选中节点为中心的完整依赖链路（两侧递归到底）；去重、环检测、固定几何布局、名称折行；纯函数，不碰 React |
-| `client.relation-graph.js` | 依赖关系图画布：固定视口内 Ctrl + 滚轮缩放、拖拽平移，节点只显示插件名并把状态收进悬浮提示；连线箭头统一为「提供者 → 消费者」（上游提供者指向靠近目标的消费者） |
+| `client.impact-tree.js` | 上下游关系树：完整下游影响链路（host 闭包）+ 上游提供者（只展开 2 层）+ 以选中节点为中心的完整依赖链路（两侧递归到底）；去重、环检测、名称折行；把树摊成有向图后交给布局与走线两个 chunk，纯函数，不碰 React |
+| `client.graph-layout.js` | 分层布局引擎：破环、以目标为中心的双向最长路分层、dummy 拆长边、median + transpose 排序、Brandes-Köpf 层内坐标、端口与通道分配。不认插件语义 |
+| `client.graph-route.js` | 走线：把端口与通道还原成正交折线，4px 圆角、箭头、标签锚点；竖段落在端点自己的 x 跨度内、横段只落在层间空隙，因此不穿方块 |
+| `client.relation-graph.js` | 依赖关系图画布：固定视口内 Ctrl + 滚轮缩放、拖拽平移，节点只显示插件名并把状态收进悬浮提示；连线箭头统一为「提供者 → 消费者」。模式切换用 `.ptSeg` 分段控件（影响图 / 完整链路图）。布局自上而下：上游在上、目标居中、下游在下；长边经 dummy 逐层直下，同一个空隙内的通道按 x 区间复用，可一键隐藏非树边 |
 | `client.preview-messages.js` / `client.influence.js` / `client.preview-raw.js` | 右簇、区块头、窗口规则、上下文未命中提示 |
 | `client.editor.js` / `client.editor-messages.js` / `client.template-card.js` | 区块头、按钮层级、卡片语法 |
 
