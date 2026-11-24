@@ -8,6 +8,7 @@ A sidebar plugin console for DeepSeek Harness (DSH). It gathers plugin, session,
 information through runtime object analysis and raw source-file scanning, and presents it in the panel.
 It also provides a model-context preview, a preview of the impact of disabling a plugin
 and its config overrides, and matching context customization.
+Suggestions, questions, and criticism are welcome.
 
 ## Features
 
@@ -26,12 +27,14 @@ and its config overrides, and matching context customization.
 - **Plugin disable preview** — pick any plugin and preview what disabling it would remove: tools,
   prompt sections, and runtime injections. It also shows how the declared config differs from the
   effective value, and a dependency graph of upstream/downstream plugin relationships — laid out
-  layer by layer, or switched to a network layout to read clusters and density.
+  layer by layer, or switched to a network layout to read clusters and density. Click a node or
+  edge to highlight the whole path through it; right-click a node to open its plugin page.
 
 ## Install
 
 ```sh
 # From npm
+# You can also add it from DSH's built-in plugin list by entering @cheemsup/dsh-plugin-console
 dsh plugin --profile <profile> add @cheemsup/dsh-plugin-console
 
 # From GitHub
@@ -87,7 +90,8 @@ preview and start a session.*
 
 ![Plugin disable preview](https://raw.githubusercontent.com/Cheemsup/dsh-plugin-console/main/docs/images/06-disable-preview.png)
 
-*Figure 6 · The dependency graph in the plugin disable preview*
+*Figure 6 · The plugin disable preview page: simulates what changes after disabling a plugin, such
+as which prompts and tools are lost and how the impact propagates along dependency chains.*
 
 ## Data confidence
 
