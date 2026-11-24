@@ -1,6 +1,6 @@
 {
   "name": "@cheemsup/dsh-plugin-console",
-  "version": "0.3.3",
+  "version": "0.3.4",
   "description": "插件运行控制台：观测当前 profile 的插件组合、会话来源、工具归属与首请求，并支持会话级提示词/工具定制",
   "type": "module",
   "main": "lib/index.js",
@@ -49,6 +49,7 @@
     "lib/client.page.js",
     "lib/client.session-detail.js",
     "lib/client.graph-layout.js",
+    "lib/client.graph-net.js",
     "lib/client.graph-route.js",
     "lib/client.impact-tree.js",
     "lib/client.relation-graph.js",

@@ -25,7 +25,8 @@ and its config overrides, and matching context customization.
   cleanup.
 - **Plugin disable preview** — pick any plugin and preview what disabling it would remove: tools,
   prompt sections, and runtime injections. It also shows how the declared config differs from the
-  effective value, and a tree of upstream/downstream plugin relationships.
+  effective value, and a dependency graph of upstream/downstream plugin relationships — laid out
+  layer by layer, or switched to a network layout to read clusters and density.
 
 ## Install
 
