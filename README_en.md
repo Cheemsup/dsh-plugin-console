@@ -8,6 +8,7 @@ A sidebar plugin console for DeepSeek Harness (DSH). It gathers plugin, session,
 information through runtime object analysis and raw source-file scanning, and presents it in the panel.
 It also provides a model-context preview, a preview of the impact of disabling a plugin
 and its config overrides, and matching context customization.
+
 Suggestions, questions, and criticism are welcome.
 
 ## Features

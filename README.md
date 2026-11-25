@@ -5,6 +5,7 @@
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](https://opensource.org/license/mit)
 
 DeepSeek Harness（DSH）的侧边栏插件控制台：通过运行时对象分析以及原始文件扫描处理的方式获取关于插件、会话、工具等信息并通过页面向用户展示；同时提供模型上下文预演、插件禁用影响与配置覆盖关系的预演，以及相应的上下文定制功能
+
 欢迎提出建议、问题以及批评
 
 ## 功能
