@@ -1,6 +1,6 @@
 {
   "name": "@cheemsup/dsh-plugin-console",
-  "version": "0.3.6",
+  "version": "0.3.7",
   "description": "插件运行控制台：观测当前 profile 的插件组合、会话来源、工具归属与首请求，并支持会话级提示词/工具定制",
   "type": "module",
   "main": "lib/index.js",
@@ -23,6 +23,12 @@
     "lib/client.workspace-picker.js",
     "lib/client.search.js",
     "lib/client.plugins.js",
+    "lib/client.plugin-detail.js",
+    "lib/client.surface.js",
+    "lib/client.surface-store.js",
+    "lib/client.surface-skills.js",
+    "lib/client.surface-commands.js",
+    "lib/client.surface-network.js",
     "lib/client.plugin-filters.js",
     "lib/client.activity.js",
     "lib/client.changes.js",
@@ -83,10 +89,13 @@
     "verify:chunks": "node scripts/verify-chunks.mjs",
     "verify:bundle": "node scripts/verify-bundle.mjs",
     "verify:icon": "node scripts/verify-icon.mjs",
+    "verify:surface-skills": "node scripts/verify-surface-skills.mjs",
+    "verify:surface-commands": "node scripts/verify-surface-commands.mjs",
+    "verify:surface-network": "node scripts/verify-surface-network.mjs",
     "verify:views": "node scripts/verify-views.mjs",
     "verify:destructuring": "node scripts/verify-destructuring.mjs",
     "verify:structure": "node scripts/verify-structure.mjs",
-    "verify": "npm run verify:host && npm run verify:health && npm run verify:activity && npm run verify:changes && npm run verify:impact && npm run verify:patch-config && npm run verify:disable-preview && npm run verify:session-plan && npm run verify:control && npm run verify:snapshot && npm run verify:templates && npm run verify:materialize && npm run verify:cleanup && npm run verify:session-influence && npm run verify:request-preview && npm run verify:source-scan && npm run verify:registration-site && npm run verify:imports && npm run verify:theme && npm run verify:chunks && npm run verify:bundle && npm run verify:icon && npm run verify:views && npm run verify:destructuring && npm run verify:structure"
+    "verify": "npm run verify:host && npm run verify:health && npm run verify:activity && npm run verify:changes && npm run verify:impact && npm run verify:patch-config && npm run verify:disable-preview && npm run verify:session-plan && npm run verify:control && npm run verify:snapshot && npm run verify:templates && npm run verify:materialize && npm run verify:cleanup && npm run verify:session-influence && npm run verify:request-preview && npm run verify:source-scan && npm run verify:registration-site && npm run verify:imports && npm run verify:theme && npm run verify:chunks && npm run verify:bundle && npm run verify:icon && npm run verify:surface-skills && npm run verify:surface-commands && npm run verify:surface-network && npm run verify:views && npm run verify:destructuring && npm run verify:structure"
   },
   "license": "MIT",
   "publishConfig": {

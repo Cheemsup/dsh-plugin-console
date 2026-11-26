@@ -64,7 +64,7 @@ L0 页面壳   .ptBar > .ptHead / .ptSearchRow / .ptTabs / .ptToolbar   +   .ptB
 L1a 分组头  .ptGroupHead（插件类别 / 会话工作区） · summary.ptOwnerHead（工具来源）
 L1b 区块头  .ptSectionHead（静态） · details.ptSectionFold > summary.ptSectionHead（可折叠）
 L2 容器     .ptCard（设置 / 动作组） · .ptFold（可折叠内容） · .ptSubBlocks（降一级）
-L3 条目     .ptRow（列表行） · details.ptFold > summary（内容行） · .ptToolCheck（勾选行）
+L3 条目     .ptRow（可点击列表行） · .ptSurfaceRow（只读能力行） · details.ptFold > summary（内容行） · .ptToolCheck（勾选行）
 ```
 
 规则：
@@ -129,6 +129,7 @@ L3 条目     .ptRow（列表行） · details.ptFold > summary（内容行） �
 | 列表页 | 工具条筛选 → 诊断条（变更 / 通知）→ 分组列表 → 次级区块（模式预设） |
 | 上下文预演页 | 条件 → 规模 → 内容标签 → 缺失说明 → 页底下一步 |
 | 插件禁用预演页 | 被禁用的插件 → 连锁反应（会失去的工具与提示词 / 受影响的下游插件）→ 依赖关系图 → 配置与覆盖（覆盖链 / 配置对照 / 诊断）→ 证据与边界 |
+| 能力面 | 段控件（技能 / 斜杠命令 / 网络）→ 条件（技能段：模式 + 工作区；命令段：会话 + 模式）→ 计数与降级说明 → 分组列表（技能折叠正文 / 命令行 / 网络三项）|
 
 ---
 
@@ -139,7 +140,13 @@ L3 条目     .ptRow（列表行） · details.ptFold > summary（内容行） �
 | `client.styles.js` | token 三层 + 全部组件规则；新增类先在这里定义 |
 | `client.shared.js` | `useThemePreference / normalizeTheme / THEMES / rowEnd / resultText` |
 | `client.page.js` | 外观三段控件、`data-pt-theme`、页面壳 |
-| `client.plugins.js` | 行标签/读数分区、详情顺序与 divider、详情收起；贡献分工具 / 提示词段 / 运行时上下文三组，提示词贡献一律用 `details` 容器：一级注入文本，二级「何时展示 / 注册点与源码」短片段；有装配落点的容器在摘要里带「预演」动作 |
+| `client.plugins.js` | 行标签/读数分区；详情本体已拆到 `client.plugin-detail.js`，这里只保留行与分组 |
+| `client.plugin-detail.js` | 详情顺序与 divider、详情收起；贡献分工具 / 提示词段 / 运行时上下文 / 入口（源码扫描）/ 网络（源码扫描）五组，提示词贡献一律用 `details` 容器：一级注入文本，二级「何时展示 / 注册点与源码」短片段；有装配落点的容器在摘要里带「预演」动作 |
+| `client.surface.js` | 能力面外壳、三段控件与条件栏；段内容按需注入 |
+| `client.surface-store.js` | 能力面条件（工作区 / 模式 / 会话）与按段懒取；ticket 防竞态，失败保留原因 |
+| `client.surface-skills.js` | 技能段：计数、来源与调用性标签、路径、正文按需展开、发现不完整警告 |
+| `client.surface-commands.js` | 命令段：活会话 / 预设 scope / 源码扫描三种证据分开显示，技能入口与 client 贡献缺失说明 |
+| `client.surface-network.js` | 网络段：LLM / web provider、MCP 状态、入站路由；`failed` 用错误色，`disabled` 弱化 |
 | `client.sessions.js` | 行标签/读数分区、分组头右簇 |
 | `client.session-detail.js` | 详情收起、绑定区的读/写分隔、子块标题 |
 | `client.tools.js` | 两段区块折叠头、来源分组头、工具行读数 |

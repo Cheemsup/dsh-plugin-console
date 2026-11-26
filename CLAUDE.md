@@ -8,10 +8,10 @@
 展示当前 profile 组合出的 Cordis 插件树、会话的插件来源、工具归属与上下文预演（在指定工作区、
 模式、权限预设下，新会话的第一条消息发出前模型真正会收到的内容），并支持把改写后的提示词/工具集
 作为模板应用到一个会话。树只是插件页的组织方式；控制台还包含会话 / 工具 / 上下文预演 /
-插件禁用预演四页与可撤销的
-会话级调节。代码分两半，加载方式完全不同：
+插件禁用预演 / 能力面五页与可撤销的
+会话级调节。能力面负责模型工具之外的三类事实：技能目录、斜杠命令、网络能力与连接。代码分两半，加载方式完全不同：
 
-- **host 半**（`lib/index.js`，Node ESM）：被 DSH 直接 `import`，在 Cordis 里注册 13 条
+- **host 半**（`lib/index.js`，Node ESM）：被 DSH 直接 `import`，在 Cordis 里注册 18 条
   鉴权 Fetch 路由（`/api/plugin-console/*`）。
 - **client 半**（`lib/client.js`，浏览器 lazy-CJS）：由宿主模块系统
   `@deepseek-ai/dsh-client-modules` 加载，注册侧边栏 slot 与主面板。
@@ -24,7 +24,7 @@
 ## 常用命令
 
 ```powershell
-npm run verify                 # 全部 24 项自检（当前状态下应全绿）
+npm run verify                 # 全部 28 项自检（当前状态下应全绿）
 npm run verify:views           # 单跑一项；等价于 node scripts/verify-views.mjs
 node scripts/verify-views.mjs  # 任一脚本都可直接跑
 ```
@@ -32,7 +32,7 @@ node scripts/verify-views.mjs  # 任一脚本都可直接跑
 没有构建、lint、依赖安装步骤：仓库零依赖，自检脚本是普通 Node ESM，不依赖测试框架。
 唯一的 peer dependency 是宿主提供的 `@deepseek-ai/cordis`（`~4.1.0`）。
 
-> `scripts/`（24 项自检与夹具）只在本地保留，已由 `.gitignore` 排除，不随仓库发布。
+> `scripts/`（28 项自检与夹具）只在本地保留，已由 `.gitignore` 排除，不随仓库发布。
 
 安装/卸载到某个 profile（真机调试）：
 
@@ -63,6 +63,8 @@ lib/index.js → routes/* → templates/* + host/*
   声明值（preset 组合清单）、文件事实（`host/patch-config.js` 读到的 patch config）、源码扫描
   （`host/source-scan.js`）；推导与推断必须单独标注。注册表不记 owner，所以工具
   与提示词段的「谁注册的」只能扫包源码；扫不到就标「未归属」并写原因，不硬凑近似结果。
+  能力面把「注册标签」也列为独立证据：入站路由可能来自 effect label，也可能是源码里的
+  path 字面量，两者分开标注。
 - 提示词注册点：源码扫描除了名字，还记录 `sites`（file / line / receiver / receiverKind）。
   `receiverKind` 是启发式推断，只用来判断「这个名字是否在本作用域注册」；插件页据此决定
   是否提供「在上下文预演中查看」——预演只装配 global + preset scope，子代理 / 会话 /
@@ -91,6 +93,12 @@ lib/index.js → routes/* → templates/* + host/*
   `interpolate:false`），整条隐藏用 `suppressRuntimeContext()`；pre-step 注入的消息由
   `templates/message-overlay.js` 在 `prepend:true` 的监听器里改写，只改 `content`、保留
   `source/id`（baselineIdentity 与目录 digest 都靠它）。
+- 能力面（`host/surface-*.js` + `routes/surface-*.js`）按需懒取，不进快照；只有源码扫描的
+  名字随 `registrations` 进快照。技能走 `ctx.skills.snapshot()/get()`（工作区 + 预设 scope，
+  3 秒上限）；命令以活会话 `commands.list(agent)` 为主，无活会话时用 `acquireScope()` 的
+  scope key 只读回退（标 `offContract`），再退源码扫描；网络只读 `llm/web.listProviders()`、
+  `mcpManager.list()`、effect label 与源码里的 path 字面量，不拦截 fetch、不返回 endpoint /
+  headers / env / args。
 - 不反射私有符号（`ctx.intercept()` / `ctx.isolate()` 不展示）。
 
 ### client 半
@@ -105,12 +113,17 @@ client 半**没有打包器**，只能用一个包内 chunk 机制：每个文�
   工作区/权限条件）、`client.preview-store.js`（预演条件）三个 hook 里。定制页的工作区/权限条件
   **与预演页互相独立**，不共用状态；预演页的「首请求」与定制页的「定制结果」是两份请求。
   视图是纯函数（`renderSessionsView(vc)`），`page.js` 把「状态 + setter + 动作 + memo 派生值」
-  装进 `vc` 传给视图，视图可脱离页面单独渲染——`verify-views.mjs` 依赖这点。
+  装进 `vc` 传给视图，视图可脱离页面单独渲染——`verify-views.mjs` 依赖这点。插件详情本体在
+  `client.plugin-detail.js`（从 `client.plugins.js` 拆出，避免撞 1000 行上限）。
 - 共享实例（`draft`、`cleanup`、`editor` 等）在 `client.js` 里组装一次再注入，避免不同
   chunk 各自造一份状态。
-- 视图只有五个标签 + 定制编辑器：插件 / 会话 / 工具 / 上下文预演 / 插件禁用预演。页面组织原则是「一页一个问题」，
-  界面约束见 `docs/design-ui.md`，改 UI 前先读。
-- 插件详情的贡献分三组：工具 / 提示词段 / 运行时上下文。提示词贡献一律渲染成 `details`
+- 视图只有六个标签 + 定制编辑器：插件 / 会话 / 工具 / 上下文预演 / 插件禁用预演 / 能力面。
+  能力面内部三段：技能 / 斜杠命令 / 网络；条件与按段懒取在 `client.surface-store.js`，
+  各段视图分别在 `client.surface-skills.js`、`client.surface-commands.js`、
+  `client.surface-network.js`。页面组织原则是「一页一个问题」，界面约束见
+  `docs/design-ui.md`，改 UI 前先读。
+- 插件详情的贡献分五组：工具 / 提示词段 / 运行时上下文 / 入口（源码扫描）/ 网络（源码扫描）。
+  「入口」与「网络」只展示源码字面量，运行时真相在能力面；每组都带跳转。提示词贡献一律渲染成 `details`
   容器（一级看注入文本，二级看「何时展示 / 注册点与源码」）；只有「本作用域注册且当前装配里
   有落点」的容器在摘要里提供「预演」动作。名字级索引恰好只有本行、站点全在本作用域且名字
   不是模板时标 `唯一来源`。预演页的来源标签统一为「可能的插件来源，点击跳转查看」，

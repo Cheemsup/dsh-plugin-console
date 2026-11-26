@@ -25,6 +25,10 @@ Suggestions, questions, and criticism are welcome.
 - **Prompt customization templates** — a rule file managed by the plugin enables customization on
   top of DSH's standard model context, with a complete lifecycle for switching, inheritance, and
   cleanup.
+- **Capability surface** — inspect three things beyond model tools: skills by workspace and mode
+  (file path, source, model/user invocability, content on demand), the slash-command directory
+  (host commands, builtin aliases, skill entries, and a source-scan fallback), and network
+  capabilities (LLM/web providers, MCP status, declared inbound routes).
 - **Plugin disable preview** — pick any plugin and preview what disabling it would remove: tools,
   prompt sections, and runtime injections. It also shows how the declared config differs from the
   effective value, and a dependency graph of upstream/downstream plugin relationships — laid out
@@ -87,6 +91,19 @@ receive before my first message." Different workspaces and modes produce differe
 *Figure 5 · The editor: after choosing a workspace and mode, customize the prompt on top of the
 preview and start a session.*
 
+### Capability surface
+
+The capability surface answers "what exists beyond model tools" in one page:
+
+- **Skills** — the `ctx.skills` catalog for a workspace and mode, with instruction-file path, source,
+  provider, model/user invocability, and discovery completeness; content is fetched on demand and
+  truncated.
+- **Slash commands** — a live session reads `commands.list(agent)`; without one the page reads the
+  preset scope read-only, then falls back to source scanning. User-invocable skills appear as slash
+  entries, and the page states that client-side command contributions are not included.
+- **Network** — LLM/web search/web fetch providers, MCP server connection status, and declared
+  inbound routes; endpoints, headers, and env values are never shown.
+
 ### Plugin disable preview
 
 ![Plugin disable preview](https://raw.githubusercontent.com/Cheemsup/dsh-plugin-console/main/docs/images/06-disable-preview.png)
@@ -100,8 +117,12 @@ as which prompts and tools are lost and how the impact propagates along dependen
   read directly from the host.
 - **Derived**: workspace, permissions, instruction files, skill catalog, and time snapshots are
   recomputed from the same config and files.
-- **Source attribution**: the registry does not record who registered a tool or prompt section, so
-  plugin source is scanned to fill that in.
+- **Source attribution**: the registry does not record who registered a tool, prompt section,
+  command, skill, or provider, so plugin source is scanned to fill that in.
+- **Capability surface**: skills and commands come from runtime registries; a command's
+  `definitionId` and a skill's `provider` are package-level facts and take priority over the source
+  scan. Inbound routes come from effect labels written at registration time and from `path`
+  literals in source, each labelled separately.
 - **Scope inference**: a registration site carries its file, line, and receiver; receivers such as
   `childCtx` / `scope` are only used to infer "another scope", never presented as a runtime fact.
 - **File facts**: bundle / profile / home patch files and their config subtrees; unreadable files or
@@ -127,6 +148,12 @@ as which prompts and tools are lost and how the impact propagates along dependen
   and the name is not a template. Owner tags on the context preview all read
   "possible plugin source, click to open" and do not distinguish name collisions.
   Both the text and the snippet are static source facts, not the text the model actually received.
+- The capability surface does not record network request traffic: it shows provider registries,
+  MCP connection status, and route declarations only; it does not intercept fetch or read proxy
+  logs. The slash directory covers host commands plus user-invocable skills; client-side
+  contributions (`ui-commands`) and client skill sources exist only in the browser.
+- Cold sessions have no Agent, so the command directory falls back to source scanning. A preset-scope
+  catalog is read read-only through its scope key and degrades if that call fails.
 - Activity covers tool contributions only, over the last 7 days and at most 20 sessions
   (experimental). Plugins that only provide services or listen to events have no call counts.
 - The plugin disable preview is derived; it does not disable anything or simulate an unload, and "lost" only
