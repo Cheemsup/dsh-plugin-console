@@ -98,11 +98,16 @@ The capability surface answers "what exists beyond model tools" in one page:
 - **Skills** — the `ctx.skills` catalog for a workspace and mode, with file location, source,
   provider, model/manual usage, and discovery completeness; content is fetched on demand in full,
   without truncation.
-- **Slash commands** — a live session reads `commands.list(agent)`; without one the page reads the
-  preset scope read-only, then falls back to source scanning. User-invocable skills appear as slash
-  entries, and the page states that client-side command contributions are not included.
-- **Network** — LLM/web search/web fetch providers, MCP server connection status, and declared
-  inbound routes; endpoints, headers, and env values are never shown.
+- **Slash commands** — pick a session inside the chosen workspace (inactive sessions included;
+  sessions outside any workspace fall back into the default workspace and are marked "ungrouped").
+  A live session reads `commands.list(agent)`; an inactive session, or no session at all, reads the
+  preset scope read-only and then falls back to source scanning. User-invocable skills appear as slash
+  entries; client-side command contributions are not host-visible and are noted in the source chip's
+  tooltip.
+- **Network** — LLM/web search/web fetch providers, MCP server connection status, declared inbound
+  routes, and source-level network call sites (fetch / axios / node:http / WebSocket / config keys);
+  endpoints, headers, and env values are never shown, and source targets are stripped of credentials
+  and query strings.
 
 ### Plugin disable preview
 
@@ -149,11 +154,14 @@ as which prompts and tools are lost and how the impact propagates along dependen
   "possible plugin source, click to open" and do not distinguish name collisions.
   Both the text and the snippet are static source facts, not the text the model actually received.
 - The capability surface does not record network request traffic: it shows provider registries,
-  MCP connection status, and route declarations only; it does not intercept fetch or read proxy
+  MCP connection status, route declarations, and source-level call sites (which do not prove a request
+  happened) only; it does not intercept fetch or read proxy
   logs. The slash directory covers host commands plus user-invocable skills; client-side
   contributions (`ui-commands`) and client skill sources exist only in the browser.
-- Cold sessions have no Agent, so the command directory falls back to source scanning. A preset-scope
-  catalog is read read-only through its scope key and degrades if that call fails.
+- An inactive session (or no session) has no Agent: the command directory falls back to a read-only
+  preset scope built from that session's recorded mode plus the chosen workspace, so commands
+  registered only in the session scope are missing and the page says so. If no scope can be acquired
+  it degrades to source scanning.
 - Activity covers tool contributions only, over the last 7 days and at most 20 sessions
   (experimental). Plugins that only provide services or listen to events have no call counts.
 - The plugin disable preview is derived; it does not disable anything or simulate an unload, and "lost" only

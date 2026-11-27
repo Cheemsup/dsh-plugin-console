@@ -95,9 +95,15 @@ lib/index.js → routes/* → templates/* + host/*
   `source/id`（baselineIdentity 与目录 digest 都靠它）。
 - 能力面（`host/surface-*.js` + `routes/surface-*.js`）按需懒取，不进快照；只有源码扫描的
   名字随 `registrations` 进快照。技能走 `ctx.skills.snapshot()/get()`（工作区 + 预设 scope，
-  3 秒上限）；命令以活会话 `commands.list(agent)` 为主，无活会话时用 `acquireScope()` 的
-  scope key 只读回退（标 `offContract`），再退源码扫描；网络只读 `llm/web.listProviders()`、
-  `mcpManager.list()`、effect label 与源码里的 path 字面量，不拦截 fetch、不返回 endpoint /
+  3 秒上限）；命令以活会话 `commands.list(agent)` 为主；会话已结束（或没指定会话）时用
+  `acquireScope()` 的 scope key 只读回退（标 `offContract`），冷会话另标 `sessionState:
+  'inactive'`——会话 scope 读不到，结果只是「它记录的模式 + 工作区」的近似；再退源码扫描；
+  会话候选只列选中工作区内的全部会话（含未运行的；未归属工作区的会话兜底进默认工作区，
+  标「未归属」），模式在选中会话时锁到该会话的预设；
+  网络只读 `llm/web.listProviders()`、
+  `mcpManager.list()`、effect label 与源码里的 path 字面量；另用 `host/network-scan.js`
+  的规则表补直接请求（导入绑定 + 调用形状：fetch / axios / node:http / WebSocket / 配置键），
+  该结果是静态证据，单独标注「不证明请求发生过」。不拦截 fetch、不返回 endpoint /
   headers / env / args。
 - 不反射私有符号（`ctx.intercept()` / `ctx.isolate()` 不展示）。
 
@@ -123,6 +129,8 @@ client 半**没有打包器**，只能用一个包内 chunk 机制：每个文�
   `client.surface-network.js`。页面组织原则是「一页一个问题」，界面约束见
   `docs/design-ui.md`，改 UI 前先读。
 - 插件详情的贡献分五组：工具 / 提示词段 / 运行时上下文 / 入口（源码扫描）/ 网络（源码扫描）。
+  「网络」同时列注册名与源码调用点：前者是注册声明，后者由 `host/network-scan.js` 按导入绑定
+  匹配，带文件/行号与脱敏端点，属于静态证据。
   「入口」与「网络」只展示源码字面量，运行时真相在能力面；每组都带跳转。提示词贡献一律渲染成 `details`
   容器（一级看注入文本，二级看「何时展示 / 注册点与源码」）；只有「本作用域注册且当前装配里
   有落点」的容器在摘要里提供「预演」动作。名字级索引恰好只有本行、站点全在本作用域且名字
