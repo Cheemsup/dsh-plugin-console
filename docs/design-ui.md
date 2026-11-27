@@ -144,7 +144,7 @@ L3 条目     .ptRow（可点击列表行） · .ptSurfaceRow（只读能力行�
 | `client.plugin-detail.js` | 详情顺序与 divider、详情收起；贡献分工具 / 提示词段 / 运行时上下文 / 入口（源码扫描）/ 网络（源码扫描）五组，提示词贡献一律用 `details` 容器：一级注入文本，二级「何时展示 / 注册点与源码」短片段；有装配落点的容器在摘要里带「预演」动作 |
 | `client.surface.js` | 能力面外壳、三段控件与条件栏；段内容按需注入 |
 | `client.surface-store.js` | 能力面条件（工作区 / 模式 / 会话）与按段懒取；ticket 防竞态，失败保留原因 |
-| `client.surface-skills.js` | 技能段：计数、来源与调用性标签、路径、正文按需展开、发现不完整警告 |
+| `client.surface-skills.js` | 技能段：计数、来源层级标签（项目 / 本机 / DSH / 配置 / 运行时，原始 source 保留在提示与展开项）、使用方式标签、展开后的文件位置（无 path 时退回资源目录）/ source / provider / 归属插件、正文按需完整读取、单条正文内的文本检索、发现不完整警告 |
 | `client.surface-commands.js` | 命令段：活会话 / 预设 scope / 源码扫描三种证据分开显示，技能入口与 client 贡献缺失说明 |
 | `client.surface-network.js` | 网络段：LLM / web provider、MCP 状态、入站路由；`failed` 用错误色，`disabled` 弱化 |
 | `client.sessions.js` | 行标签/读数分区、分组头右簇 |

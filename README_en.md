@@ -95,9 +95,9 @@ preview and start a session.*
 
 The capability surface answers "what exists beyond model tools" in one page:
 
-- **Skills** — the `ctx.skills` catalog for a workspace and mode, with instruction-file path, source,
-  provider, model/user invocability, and discovery completeness; content is fetched on demand and
-  truncated.
+- **Skills** — the `ctx.skills` catalog for a workspace and mode, with file location, source,
+  provider, model/manual usage, and discovery completeness; content is fetched on demand in full,
+  without truncation.
 - **Slash commands** — a live session reads `commands.list(agent)`; without one the page reads the
   preset scope read-only, then falls back to source scanning. User-invocable skills appear as slash
   entries, and the page states that client-side command contributions are not included.
