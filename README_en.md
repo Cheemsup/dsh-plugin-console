@@ -104,10 +104,12 @@ The capability surface answers "what exists beyond model tools" in one page:
   preset scope read-only and then falls back to source scanning. User-invocable skills appear as slash
   entries; client-side command contributions are not host-visible and are noted in the source chip's
   tooltip.
-- **Network** — LLM/web search/web fetch providers, MCP server connection status, declared inbound
-  routes, and source-level network call sites (fetch / axios / node:http / WebSocket / config keys);
-  endpoints, headers, and env values are never shown, and source targets are stripped of credentials
-  and query strings.
+- **Network** — organised as controlled egress → direct calls → inbound routes. Direct calls and
+  inbound routes are folded per plugin (direct calls are grouped by site inside each plugin), with
+  third-party groups that provide no controlled channel flagged as inferred; the condition bar has a searchable
+  plugin selector. Controlled egress lists LLM/web search/web fetch providers and MCP connection
+  status. Endpoints, headers, and env values are never shown, and source targets are stripped of
+  credentials and query strings.
 
 ### Plugin disable preview
 

@@ -73,7 +73,7 @@ dsh plugin --profile <profile> add file:<本目录绝对路径>
 
 - **技能**：按工作区 + 模式读取 `ctx.skills` 目录，显示文件位置、source、provider、使用方式与发现完整性；正文按需读取，完整显示不截断。
 - **斜杠命令**：按工作区挑选会话（含未运行的会话；未归属工作区的会话兜底进默认工作区并标「未归属」），活会话读 `commands.list(agent)`；会话已结束或没有指定会话时只读预设 scope，再退源码扫描。同时列出 user-invocable skill 入口；浏览器侧注册的命令贡献不在宿主侧，界面把它收在来源标签的悬停说明里。
-- **网络**：LLM / web 搜索 / web 抓取 provider、MCP server 的连接状态、入站路由声明，以及源码里识别到的网络调用点（fetch / axios / node:http / WebSocket / 配置键）；不展示 endpoint、headers、env 等配置值，源码端点只保留去掉凭据与查询串的字面量。
+- **网络**：按「受控出口 → 直连出口 → 入站入口」三段组织。受控出口列出 LLM / web 搜索 / web 抓取 provider 与 MCP server 的连接状态；直连出口与入站入口各按插件折叠收纳全部端点（直连内部再按站点分组），并标出未提供受控通道的第三方插件（推断）；条件栏的插件选择器支持展开列表与输入过滤。不展示 endpoint、headers、env 等配置值，源码端点只保留去掉凭据与查询串的字面量。
 
 ### 插件禁用预演
 
