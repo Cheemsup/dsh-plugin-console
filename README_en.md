@@ -58,10 +58,21 @@ dsh plugin --profile <profile> add file:<absolute path to this repo>
 *Figure 1 · The Plugins page shows plugin information, behavior, dependencies, and relationships
 inside DSH.*
 
-Plugin details split contributions into tools, prompt sections, and runtime contexts. Only names
-with a target in the current first-request assembly jump to the context preview; subagent, session,
-and conditional registrations expand in place with their registration site, receiver, and an
-on-demand source snippet.
+Plugin rows carry readings for tools, prompt sections, skills, commands, and network behaviour.
+Skill and command counts prefer the capability surface's owner counts under the current
+conditions (so provider-discovered skills are included) and fall back to the source scan; the
+network-behaviour count is the number of direct calls or config keys found in the source, with a
+single-sentence tooltip. Prompt registration sites and network call sites are no longer truncated
+by count in plugin details.
+
+Plugin details split contributions into six groups: tools, prompt sections, runtime contexts,
+source-scanned entries, source-scanned network, and runtime capability-surface ownership. Only
+names with a target in the current first-request assembly jump to the context preview; subagent,
+session, and conditional registrations expand in place with their registration site, receiver, and
+an on-demand source snippet. Skills, commands, providers, MCP servers, and inbound routes jump back
+to their capability-surface segment scoped to this plugin; the runtime group reads the surface's
+current conditions and lists only rows owned by this plugin. Surface owner chips jump back to plugin
+details, expanding the category if it was collapsed.
 
 ### Sessions
 
@@ -110,6 +121,10 @@ The capability surface answers "what exists beyond model tools" in one page:
   plugin selector. Controlled egress lists LLM/web search/web fetch providers and MCP connection
   status. Endpoints, headers, and env values are never shown, and source targets are stripped of
   credentials and query strings.
+- **Cross-links with the Plugins page** — the skills and commands segments can be narrowed to a
+  plugin from its detail page, and the network segment lands on the plugin selector. Every owner
+  chip jumps back to that plugin's detail. Mode-only modules use the same `rowId` (the module name)
+  on both sides.
 
 ### Plugin disable preview
 
@@ -155,6 +170,10 @@ as which prompts and tools are lost and how the impact propagates along dependen
   and the name is not a template. Owner tags on the context preview all read
   "possible plugin source, click to open" and do not distinguish name collisions.
   Both the text and the snippet are static source facts, not the text the model actually received.
+- The runtime capability-surface group in plugin details is collapsed by default and reads the
+  surface's current conditions on expand; if you never opened the surface, it uses the most recently
+  active workspace and the default mode. It lists only rows whose owners contain this row; the
+  source-scanned names are still in the two groups above.
 - The capability surface does not record network request traffic: it shows provider registries,
   MCP connection status, route declarations, and source-level call sites (which do not prove a request
   happened) only; it does not intercept fetch or read proxy
