@@ -7,9 +7,10 @@
 `@cheemsup/dsh-plugin-console` 是 DeepSeek Harness（DSH）的侧边栏「插件控制台」，定位是插件运行控制台：
 展示当前 profile 组合出的 Cordis 插件树、会话的插件来源、工具归属与上下文预演（在指定工作区、
 模式、权限预设下，新会话的第一条消息发出前模型真正会收到的内容），并支持把改写后的提示词/工具集
-作为模板应用到一个会话。树只是插件页的组织方式；控制台还包含会话 / 工具 / 上下文预演 /
-插件禁用预演 / 能力面五页与可撤销的
-会话级调节。能力面负责模型工具之外的三类事实：技能目录、斜杠命令、网络能力与连接。代码分两半，加载方式完全不同：
+作为模板应用到一个会话。树只是插件页的组织方式；控制台还包含会话 / 上下文预演 /
+插件禁用预演 / 插件能力面四页与可撤销的
+会话级调节。插件能力面汇总一个部署与每个插件提供的五类事实：工具、上下文注入、
+技能目录、斜杠命令、网络能力与连接。代码分两半，加载方式完全不同：
 
 - **host 半**（`lib/index.js`，Node ESM）：被 DSH 直接 `import`，在 Cordis 里注册 18 条
   鉴权 Fetch 路由（`/api/plugin-console/*`）。
@@ -24,7 +25,7 @@
 ## 常用命令
 
 ```powershell
-npm run verify                 # 全部 28 项自检（当前状态下应全绿）
+npm run verify                 # 全部 28 项自检（提交前应全绿）
 npm run verify:views           # 单跑一项；等价于 node scripts/verify-views.mjs
 node scripts/verify-views.mjs  # 任一脚本都可直接跑
 ```
@@ -49,7 +50,7 @@ dsh plugin --profile <profile> remove @cheemsup/dsh-plugin-console
 ### host 半
 
 ```
-lib/index.js → routes/* → templates/* + host/*
+lib/index.js → host/routes/* → host/templates/* + host/*
 ```
 
 `lib/index.js` 只做三件事：`inject: ['loader']`；在 connection 到来**之前**安装模板继承与
@@ -67,10 +68,10 @@ lib/index.js → routes/* → templates/* + host/*
   path 字面量，两者分开标注。
 - 提示词注册点：源码扫描除了名字，还记录 `sites`（file / line / receiver / receiverKind）。
   `receiverKind` 是启发式推断，只用来判断「这个名字是否在本作用域注册」；插件页据此决定
-  是否提供「在上下文预演中查看」——预演只装配 global + preset scope，子代理 / 会话 /
+  是否提供「预演」动作——预演只装配 global + preset scope，子代理 / 会话 /
   条件作用域（例如 `dsh-subagent` 的 `subagent:delegation`）没有首请求落点，只展开本地
   注册点。按需源码片段走 `POST /api/plugin-console/registration-site`：只接受模块名，
-  宿主解析包目录，只读包内 `lib/**/*.js`，有大小 / 行数上限，失败返回 `found:false`。
+  宿主解析包目录，只读包内 `lib/**/*.{js,mjs,cjs}`，有大小 / 行数上限，失败返回 `found:false`。
 - 插件禁用预演（`host/disable-preview.js` + `host/config-layers.js` + `host/patch-config.js`）：
   影响面是派生计算——子行按 `entryId` 前缀级联（preset 等 EntryGroup owner 也有子行）；
   依赖链按「可用提供者全部不可用」迭代到不动点（已禁用提供者重载后不注册，不计入可用），
@@ -81,8 +82,8 @@ lib/index.js → routes/* → templates/* + host/*
   配置分层把 bundle / profile / home / 启动覆盖的 patch 声明与 Loader 生效值并排展示，bundle
   patch 读不到就标「不可读」并给原因；patch 合并语义未公开，诊断只陈述「生效值里有没有 / 与某层
   是否不同」，原因一律标推断。页面只读，执行禁用仍走控制区。
-- 依赖方向由 `scripts/verify-structure.mjs` 强制：`routes/*` 只解析参数、调服务、序列化，
-  不写业务；`templates/*` 不碰 HTTP；`host/*` 不反向 import 上层。
+- 依赖方向由 `scripts/verify-structure.mjs` 强制：`host/routes/*` 只解析参数、调服务、序列化，
+  不写业务；`host/templates/*` 不碰 HTTP；`host/*` 顶层不反向 import 上层。
 - 模板持久化：`templates/revisions/manifests/activations/masks/operations` 六张表。
   `manifests` 是会话创建时的不可变快照，`activations` 是独立可变开关（**没有记录 = 启用**）。
   存储域不可用时降级为内存表，绝不写 sidecar 文件。
@@ -93,9 +94,10 @@ lib/index.js → routes/* → templates/* + host/*
   `interpolate:false`），整条隐藏用 `suppressRuntimeContext()`；pre-step 注入的消息由
   `templates/message-overlay.js` 在 `prepend:true` 的监听器里改写，只改 `content`、保留
   `source/id`（baselineIdentity 与目录 digest 都靠它）。
-- 能力面（`host/surface-*.js` + `routes/surface-*.js`）按需懒取，不进快照；只有源码扫描的
-  名字随 `registrations` 进快照。技能走 `ctx.skills.snapshot()/get()`（工作区 + 预设 scope，
-  3 秒上限）；命令以活会话 `commands.list(agent)` 为主；会话已结束（或没指定会话）时用
+- 能力面的技能 / 命令 / 网络（`host/surface-*.js` + `host/routes/surface-*.js`）按需懒取，
+  不进快照；工具与上下文注入只读快照。只有源码扫描的名字随 `registrations` 进快照。
+  技能走 `ctx.skills.snapshot()/get()`（工作区 + 预设 scope，3 秒上限）；
+  命令以活会话 `commands.list(agent)` 为主；会话已结束（或没指定会话）时用
   `acquireScope()` 的 scope key 只读回退（标 `offContract`），冷会话另标 `sessionState:
   'inactive'`——会话 scope 读不到，结果只是「它记录的模式 + 工作区」的近似；再退源码扫描；
   会话候选只列选中工作区内的全部会话（含未运行的；未归属工作区的会话兜底进默认工作区，
@@ -117,42 +119,57 @@ client 半**没有打包器**，只能用一个包内 chunk 机制：每个文�
 入口用 `require.async('./client.<name>.js')` 取。`client.js` 先并发加载全部 chunk，最后加载
 `client.page.js`（它的工厂依赖前面所有实例）；`styles.ensureStyles()` 在挂面板前执行。
 
-- `client.page.js` 是唯一组装 React state 的地方；状态本身按失败语义拆在
+- `client.page.js` 只组装页面级 state 与派生值；状态本身按失败语义拆在
   `client.store.js`（快照 + 模板 CRUD/应用/开关）、`client.editor-store.js`（草稿、基线与
-  工作区/权限条件）、`client.preview-store.js`（预演条件）三个 hook 里。定制页的工作区/权限条件
-  **与预演页互相独立**，不共用状态；预演页的「首请求」与定制页的「定制结果」是两份请求。
+  工作区/权限条件）、`client.preview-store.js`（预演条件）、`client.surface-store.js`
+  （能力面条件与按段懒取）等 store hook 里；活动 / 控制 / 会话影响 / 禁用预演也各有一份。
+  定制页的工作区/权限条件 **与预演页互相独立**，不共用状态；预演页的「首请求」与定制页的
+  「定制结果」是两份请求。
   视图是纯函数（`renderSessionsView(vc)`），`page.js` 把「状态 + setter + 动作 + memo 派生值」
   装进 `vc` 传给视图，视图可脱离页面单独渲染——`verify-views.mjs` 依赖这点。插件详情本体在
-  `client.plugin-detail.js`（从 `client.plugins.js` 拆出，避免撞 1000 行上限）；运行时的能力面
-  归属在 `client.plugin-surface.js`，只按 owners 过滤，不自己重算归属。
+  `client.plugin-detail.js`（从 `client.plugins.js` 拆出，避免撞 1000 行上限）。运行时归属不在
+  详情里重复读取，由「能力贡献」各子块头的「在插件能力面查看」按 owner 收窄。
 - 共享实例（`draft`、`cleanup`、`editor` 等）在 `client.js` 里组装一次再注入，避免不同
   chunk 各自造一份状态。
-- 视图只有六个标签 + 定制编辑器：插件 / 会话 / 工具 / 上下文预演 / 插件禁用预演 / 能力面。
-  能力面内部三段：技能 / 斜杠命令 / 网络；条件与按段懒取在 `client.surface-store.js`，
-  各段视图分别在 `client.surface-skills.js`、`client.surface-commands.js`、
-  `client.surface-network.js`。技能与命令段的「只看插件」用 `focusOwner`（Loader 行 id），
-  网络段用条件栏的插件筛选；两者都只收窄视图，不重读路由。
+- 视图只有五个标签 + 定制编辑器：插件 / 会话 / 上下文预演 / 插件禁用预演 / 插件能力面。
+  插件能力面内部五段：工具 / 上下文注入 / 技能 / 斜杠命令 / 网络，默认工具段。
+  工具段读快照的工具表，并读活动路由补调用读数；上下文注入只读快照；技能 / 命令 / 网络
+  按需懒取。五段共用一份
+  `focusOwner`（Loader 行 id，`__none` = 未归属）与 `focusName`：owner 跨段保留、
+  name 切段清空；统一插件选择器在页面壳，各段只提供自己的附加条件。
+  上下文注入段按插件折叠：外层一个可折叠区块 + 每个插件一个 `ptOwnerGroup`
+  （默认展开），与工具段 / 网络段同一套容器和「折叠全部 / 展开全部」。
+  条件与按段懒取在 `client.surface-store.js`，段视图分别在
+  `client.surface-tools.js` / `client.surface-prompts.js` / `client.surface-skills.js` /
+  `client.surface-commands.js` / `client.surface-network.js`。
+  提示词贡献的模型与折叠视图在 `client.prompt-contribution.js`，插件详情与上下文注入段
+  共用同一份，标签、落点判断与文案不得各写一套。
   网络段按「受控出口 → 直连出口 → 入站入口」组织，三段统一整段折叠，
   规模只放在各段段头（不另立顶部总览与证据图例，每一行自带证据标签）；直连与入站内部再按插件分组，
-  每个插件一个 `ptOwnerGroup`（内部列全部端点），条件栏另有一个可输入的插件筛选（只收窄视图，不重读路由）。
+  每个插件一个 `ptOwnerGroup`（内部列全部端点），条件栏的统一插件选择器只收窄视图，不重读路由。
   页面组织原则是「一页一个问题」，界面约束见 `docs/design-ui.md`，改 UI 前先读。
-- 插件行右簇在「工具 / 提示词段」之外，还给「技能 / 命令 / 网络行为」读数：
+- 插件行右簇在「工具 / 注入 / 技能 / 命令 / 网络行为」读数里回答「源码里写了多少」：
   技能与命令优先用能力面 owner 摘要（按当前工作区 / 模式 / 会话，进入插件页时取一次；
   provider 发现的技能没有源码注册名），摘要不可用或该 owner 为 0 时退回源码扫描的
   `runtimeSkills` / `commands`；网络行为 = `networkSites` 数量，悬停只写
   「源码扫描发现 N 处网络行为」。数量回答「源码里写了多少 / 当前条件下归属多少」，
   悬停要说清来源；零值不显示，避免每行都拖一串 0。
-- 「网络 / 入口（源码扫描）」这类能力条目在插件详情里要能看全：源码扫描不再按条数截断
+- 「网络（源码扫描）」这类能力条目在插件详情里要能看全：源码扫描不再按条数截断
   prompt 注册站点与网络调用点，客户端也不再只渲染前 30 条；注册点源码片段同样不按站点数
   截断。单包文件数 / 字节数、单段文本 / 片段的字符数仍是扫描耗时与响应体积的工程上限，
   不在这条「条目数量」约束里。
-- 插件详情的贡献分六组：工具 / 提示词段 / 运行时上下文 / 入口（源码扫描）/ 网络（源码扫描）/
-  能力面归属（运行时）。「网络」同时列注册名与源码调用点：前者是注册声明，后者由
-  `host/network-scan.js` 按导入绑定匹配，带文件/行号与脱敏端点，属于静态证据。
-  前五组只展示源码字面量与快照事实；最后一组默认收起，展开时按能力面当前条件读
-  `skills` / `commands` / `network` 三条路由，只保留 owners 含本行的条目。每个条目都带反跳：
-  技能 / 命令落到对应段并按 owner 收窄，网络落到插件筛选。能力面的 owner chip 反向跳插件页；
+- 插件详情的贡献合并在一个「能力贡献」区块：只列这个插件真的有的能力，空能力连
+  子块标题都不出；工具 / 上下文注入 / 技能与命令 / 网络四个子块，每个子块头带计数与
+  「在插件能力面查看」跳转（落到对应段并只显示本插件）；上下文注入里的名字点击落到
+  上下文注入段并按名字收窄，「预演」仍是次级动作。工具与技能 / 命令用 chip，提示词用
+  `details`，网络同时列注册名与源码调用点（`host/network-scan.js` 的静态证据）。
+  四个子块各自的「在插件能力面查看」落到对应段并按 owner 收窄——那里同时展示源码扫描
+  与运行时归属；详情只讲快照 / 源码扫描的事实，运行时归属不在详情里重复读取或另设入口。
+  能力面的 owner chip 反向跳插件页；
   目标在收起的类别里会展开，目标不在快照里时插件页显示缺失说明，不静默失手。
+- 「运行时登记」段展示 Cordis fiber 的 effect 类别：与「能力贡献」重叠的注册工具 /
+  注入提示词 / 注册命令 / 提供服务 / Web / 模型适配只保留一行计数；事件监听、界面槽位、
+  Remote 方法等独有类别才作为标签，避免同一份名单出现两次。
   提示词贡献一律渲染成 `details` 容器（一级看注入文本，二级看「何时展示 / 注册点与源码」）；
   只有「本作用域注册且当前装配里
   有落点」的容器在摘要里提供「预演」动作。名字级索引恰好只有本行、站点全在本作用域且名字
